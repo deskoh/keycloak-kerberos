@@ -1,0 +1,44 @@
+
+#
+# Grant access to principals to kdc_admin/adm_admin if they're outside
+# of the realm container (krbContainer)
+#
+dn: olcDatabase={1}{{ LDAP_BACKEND }},cn=config
+changetype: modify
+add: olcAccess
+olcAccess:{2}to attrs=krbPrincipalKey
+  by anonymous auth
+  by dn.exact="uid=kdc-service,dc=example,dc=org" read
+  by dn.exact="uid=kadmin-service,dc=example,dc=org" write
+  by self write
+  by * none
+-
+add: olcAccess
+olcAccess:{3}to dn.subtree="cn=krbContainer,{{ LDAP_BASE_DN }}"
+  by dn.exact="uid=kdc-service,{{ LDAP_BASE_DN }}" write
+  by dn.exact="uid=kadmin-service,{{ LDAP_BASE_DN }}" write
+  by * none
+-
+add: olcAccess
+olcAccess:{4}to dn.subtree="ou=People,{{ LDAP_BASE_DN }}"
+  by dn.exact="uid=kdc-service,{{ LDAP_BASE_DN }}" write
+  by dn.exact="uid=kadmin-service,{{ LDAP_BASE_DN }}" write
+  by * none
+-
+add: olcAccess
+olcAccess:{5}to dn.subtree="ou=services,{{ LDAP_BASE_DN }}"
+  by dn.exact="uid=kdc-service,{{ LDAP_BASE_DN }}" write
+  by dn.exact="uid=kadmin-service,{{ LDAP_BASE_DN }}" write
+  by * none
+-
+# add: olcAccess
+# olcAccess:{6}to dn.subtree="cn=EXAMPLE.ORG,cn=krbContainer,{{ LDAP_BASE_DN }}"
+#   by dn.exact="uid=kdc-service,{{ LDAP_BASE_DN }}" write
+#   by dn.exact="uid=kadmin-service,{{ LDAP_BASE_DN }}" write
+#   by * none
+
+-
+# Add an eq index for krbPrincipalName to speed up principal lookup operations.
+dn: olcDatabase={1}{{ LDAP_BACKEND }},cn=config
+add: olcDbIndex
+olcDbIndex: krbPrincipalName eq,pres,sub

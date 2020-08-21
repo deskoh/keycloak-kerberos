@@ -1,0 +1,19 @@
+dn: ou=services,{{ LDAP_BASE_DN }}
+objectClass: top
+objectClass: organizationalUnit
+ou:services
+
+# Create Kerberos administrative entities that will contact the OpenLDAP server to perform operations.
+dn: uid=kdc-service,{{ LDAP_BASE_DN }}
+uid: kdc-service
+objectClass: account
+objectClass: simpleSecurityObject
+userPassword: password
+description: Account used for the Kerberos KDC
+
+dn: uid=kadmin-service,{{ LDAP_BASE_DN }}
+uid: kadmin-service
+objectClass: account
+objectClass: simpleSecurityObject
+userPassword: password
+description: Account used for the Kerberos Admin server

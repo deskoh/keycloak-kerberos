@@ -1,0 +1,6 @@
+# KDC database password stash
+openldap/krb5kdc/.k5.*
+# LDAP password stash
+openldap/krb5kdc/*stash
+# Keytab files
+openldap/krb5kdc/*.keytab

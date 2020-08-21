@@ -1,0 +1,87 @@
+version: '3.5'
+
+services:
+
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=password
+      - DB_ADDR=mariadb
+      - DB_USER=keycloak
+      - DB_PASSWORD=password
+      - X509_CA_BUNDLE=/tmp/certs/ca.crt
+    container_name: keycloak
+    volumes:
+      - ./certs/keycloak.key:/etc/x509/https/tls.key
+      - ./certs/keycloak.crt:/etc/x509/https/tls.crt
+      - ./certs/rootCA.crt:/tmp/certs/ca.crt
+      - ./keycloak/krb5.conf:/etc/krb5.conf
+    networks:
+      - keycloak-network
+    ports:
+      # HTTP
+      - 8080:8080
+      # HTTPS
+      - 8443:8443
+    depends_on:
+      - mariadb
+      - openldap
+
+  mariadb:
+    image: mariadb
+    environment:
+      - MYSQL_DATABASE=keycloak
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=keycloak
+      - MYSQL_PASSWORD=password
+    container_name: keycloak-mariadb
+    networks:
+      - keycloak-network
+    volumes:
+      - vol-mariadb:/var/lib/mysql
+
+  openldap:
+    build: ./openldap
+    ports:
+      # LDAP
+      - 389:389
+      - 636:636
+      # kadmin server
+      - 749:749
+      # Kerberos v5
+      - 88:88
+      - 88:88/udp
+    env_file:
+      - openldap.env
+    container_name: keycloak-openldap
+    # `--copy-service` prevents ldif files from being overwritten after subsitution. Add ` --loglevel debug` for debug
+    # command: --copy-service --loglevel debug
+    volumes:
+      - ./certs/ldap.key:/container/service/slapd/assets/certs/ldap.key
+      - ./certs/ldap.crt:/container/service/slapd/assets/certs/ldap.crt
+      - ./certs/rootCA.crt:/container/service/slapd/assets/certs/ca.crt
+      - ./openldap/krb5.conf:/etc/krb5.conf
+      - ./openldap/krb5kdc:/etc/krb5kdc
+      # - ./openldap/service/z_krb5kdc/process.sh:/container/service/z_krb5kdc/process.sh
+      - vol-openldap-ldap:/var/lib/ldap
+      - vol-openldap-slapd:/etc/ldap/slapd.d
+    networks:
+      - keycloak-network
+
+  js-console:
+    build: ./js-console
+    ports:
+      - 8000:80
+    container_name: keycloak-js-console
+    networks:
+      - keycloak-network
+
+networks:
+  keycloak-network:
+    name: local
+
+volumes:
+  vol-mariadb:
+  vol-openldap-ldap:
+  vol-openldap-slapd:

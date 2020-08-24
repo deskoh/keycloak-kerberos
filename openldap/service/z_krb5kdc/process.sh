@@ -57,7 +57,7 @@ if [ ! -e "$FIRST_START_DONE" ]; then
 
   # Create KDC database (-s flag will stash password at /etc/krb5kdc/.k5.*, alternatively run `kdb5_util stash`)
   coproc kdb5_ldap_util -D cn=admin,${LDAP_BASE_DN} -w ${LDAP_ADMIN_PASSWORD} -H ldapi:// create \
-      -subtrees ou=People,${LDAP_BASE_DN}:ou=services,${LDAP_BASE_DN} -sscope SUB -r ${KRB_REALM}
+      -subtrees ou=People,${LDAP_BASE_DN}:ou=services,${LDAP_BASE_DN} -sscope SUB -r ${KRB_REALM} -s
   echo ${KRB_MASTER_PASSWORD} >&${COPROC[1]}
   echo ${KRB_MASTER_PASSWORD} >&${COPROC[1]}
   wait

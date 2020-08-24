@@ -9,14 +9,10 @@
 docker-compose up
 
 # Verify valid keytab file generated
-docker exec keycloak-openldap kinit HTTP/keycloak.127.0.0.1.nip.io@EXAMPLE.ORG -k -t /etc/krb5kdc/keycloak.keytab
+docker exec keycloak-openldap kinit HTTP/keycloak.127.0.0.1.nip.io@EXAMPLE.ORG -k -t /etc/keytabs/keycloak.keytab
 # List and destroy Kerberos ticket
 docker exec keycloak-openldap klist
 docker exec keycloak-openldap kdestroy
-
-# Copy keytab file to KeyCloak container for decrypting Kerberos ticket:
-docker cp keycloak-openldap:/etc/krb5kdc/keycloak.keytab .
-docker cp keycloak.keytab keycloak:/tmp/keycloak.keytab
 ```
 
 ### Accessing Keycloak
@@ -92,7 +88,7 @@ service krb5-kdc status
 service krb5-admin-server status
 
 # Validate Kerberos token can be obtained using keytab file
-kinit HTTP/keycloak.127.0.0.1.nip.io@EXAMPLE.ORG -k -t /etc/krb5kdc/keycloak.keytab
+kinit HTTP/keycloak.127.0.0.1.nip.io@EXAMPLE.ORG -k -t /etc/keytabs/keycloak.keytab
 klist
 kdestroy
 

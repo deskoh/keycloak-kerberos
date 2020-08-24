@@ -64,8 +64,8 @@ if [ ! -e "$FIRST_START_DONE" ]; then
 
   # Add principles for KeyCloak and generate keytab
   kadmin.local -q "addprinc -randkey -x containerdn=ou=services,"${LDAP_BASE_DN}" HTTP/keycloak.127.0.0.1.nip.io@"${KRB_REALM}
-  rm -f /etc/krb5kdc/keycloak.keytab
-  kadmin.local -q "ktadd -k /etc/krb5kdc/keycloak.keytab HTTP/keycloak.127.0.0.1.nip.io@"${KRB_REALM}
+  rm -f /etc/keytabs/keycloak.keytab
+  kadmin.local -q "ktadd -k /etc/keytabs/keycloak.keytab HTTP/keycloak.127.0.0.1.nip.io@"${KRB_REALM}
 
   # Add entries for exiting LDAP users
   kadmin.local -q "addprinc -pw password -x dn=uid=alice,ou=People,"${LDAP_BASE_DN}" alice"

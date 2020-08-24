@@ -1341,7 +1341,7 @@
             "ldapsOnly"
           ],
           "keyTab": [
-            "/tmp/keycloak.keytab"
+            "/tmp/keytabs/keycloak.keytab"
           ],
           "kerberosRealm": [
             "EXAMPLE.ORG"

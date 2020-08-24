@@ -4,3 +4,4 @@ openldap/krb5kdc/.k5.*
 openldap/krb5kdc/*stash
 # Keytab files
 openldap/krb5kdc/*.keytab
+keytabs

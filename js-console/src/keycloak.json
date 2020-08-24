@@ -1,5 +1,7 @@
 {
-  "realm" : "dev",
-  "auth-server-url" : "http://keycloak.127.0.0.1.nip.io:8080/auth",
-  "resource" : "js-console"
+  "realm": "dev",
+  "auth-server-url": "http://keycloak.127.0.0.1.nip.io:8080/auth/",
+  "ssl-required": "external",
+  "resource": "js-console",
+  "public-client": true
 }

@@ -3,7 +3,7 @@ version: '3.5'
 services:
 
   keycloak:
-    image: quay.io/keycloak/keycloak
+    image: jboss/keycloak:11.0.1
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=password
@@ -17,6 +17,8 @@ services:
       - ./certs/keycloak.crt:/etc/x509/https/tls.crt
       - ./certs/rootCA.crt:/tmp/certs/ca.crt
       - ./keycloak/krb5.conf:/etc/krb5.conf
+      # For sharing keytab files from Kerberos
+      - ./keytabs:/tmp/keytabs
     networks:
       - keycloak-network
     ports:
@@ -29,7 +31,7 @@ services:
       - openldap
 
   mariadb:
-    image: mariadb
+    image: mariadb:10.5.5
     environment:
       - MYSQL_DATABASE=keycloak
       - MYSQL_ROOT_PASSWORD=password
@@ -43,6 +45,7 @@ services:
 
   openldap:
     build: ./openldap
+    image: openldap-kerberos
     ports:
       # LDAP
       - 389:389
@@ -66,14 +69,21 @@ services:
       # - ./openldap/service/z_krb5kdc/process.sh:/container/service/z_krb5kdc/process.sh
       - vol-openldap-ldap:/var/lib/ldap
       - vol-openldap-slapd:/etc/ldap/slapd.d
+      # For sharing keytab files to Keycloak
+      - ./keytabs:/etc/keytabs
     networks:
       - keycloak-network
 
   js-console:
     build: ./js-console
+    image: js-console
     ports:
       - 8000:80
     container_name: keycloak-js-console
+    volumes:
+      - ./js-console/src/index.html:/usr/share/nginx/html/index.html
+      - ./js-console/src/silent-check-sso:/usr/share/nginx/html/silent-check-sso
+      - ./js-console/src/keycloak.json:/usr/share/nginx/html/keycloak.json
     networks:
       - keycloak-network
 

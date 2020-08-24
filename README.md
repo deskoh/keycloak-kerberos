@@ -137,7 +137,17 @@ Common Errors:
 
 1. `1787: The security database on the server does not have a computer account for this workstation trust relationship.`
 
-1. Principal for Windows Client not added: The principal name has to be lowercase.
+   Principal for Windows Client not added: The principal name has to be lowercase.
+
+1. `SPNEGO login failed: java.security.PrivilegedActionException: GSSException: Failure unspecified at GSS-API level (Mechanism level: Checksum failed)`
+
+   Regenerate the keytab file:
+
+   ```sh
+   docker exec  keycloak-openldap kadmin.local -q "ktadd -k /etc/keytabs/keycloak.keytab HTTP/keycloak.127.0.0.1.nip.io@EXAMPLE.ORG"
+   ```
+
+
 
 ## SSL Setup
 

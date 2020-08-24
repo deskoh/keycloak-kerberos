@@ -1,3 +1,3 @@
-FROM httpd:alpine
+FROM nginx:alpine
 
-ADD src /usr/local/apache2/htdocs/
+ADD src /usr/share/nginx/html/

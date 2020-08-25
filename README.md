@@ -4,6 +4,8 @@
 
 ### Kerberos Setup
 
+> Review permissions of volume mounts to ensure file permissions are at least 644.
+
 ```sh
 # Start services using Docker Compose
 docker-compose up
@@ -13,6 +15,9 @@ docker exec keycloak-openldap kinit HTTP/keycloak.127.0.0.1.nip.io@EXAMPLE.ORG -
 # List and destroy Kerberos ticket
 docker exec keycloak-openldap klist
 docker exec keycloak-openldap kdestroy
+
+# Verify permissions of shared keytab file to ensure it can be read by Keycloak
+docker exec --user root keycloak chmod 644 /tmp/keytabs/keycloak.keytab
 ```
 
 ### Accessing Keycloak
@@ -23,17 +28,17 @@ docker exec keycloak-openldap kdestroy
 
 * Password: `password`
 
-* OIDC Endpoint: `http://localhost:8080/auth/realms/{realm}/.well-known/openid-configuration`
+* OIDC Endpoint: `http://keycloak.127.0.0.1.nip.io:8080/auth/realms/{realm}/.well-known/openid-configuration`
 
-* Authorization Endpoint: `http://localhost:8080/auth/realms/{realm}/protocol/openid-connect/auth`
+* Authorization Endpoint: `http://keycloak.127.0.0.1.nip.io:8080/auth/realms/{realm}/protocol/openid-connect/auth`
 
-Create a KeyCloak Realm `dev` by importing `/keycloak/realm-dev-export.json`
+* Account Management: `http://keycloak.127.0.0.1.nip.io:8080/auth/realms/{realm}/account`
 
 ### Kerberos Login Test
 
 > Credentials: `alice@EXAMPLE.ORG` / `password`, `bob@EXAMPLE.ORG` / `password`
 
-1. `js-console` [login](http://js-console.127.0.0.1.nip.io:8000/) 
+1. `js-console` [login](http://js-console.127.0.0.1.nip.io:8000/)
 
 2. `OIDC Debugger` [login](https://oidcdebugger.com/)
    > Open `Send Request` using InPrivate / Cognito Window
@@ -43,7 +48,6 @@ Create a KeyCloak Realm `dev` by importing `/keycloak/realm-dev-export.json`
    * Redirect URL: `https://oidcdebugger.com/debug`
 
    * Client ID: `oidc-debugger`
-
 
 ### Cleanup
 
@@ -98,6 +102,20 @@ kdestroy
 curl -I --negotiate -u alice@EXAMPLE.ORG:password "http://keycloak.127.0.0.1.nip.io:8080/auth/realms/dev/protocol/openid-connect/auth?client_id=js-console&redirect_uri=http%3A%2F%2Fjs-console.127.0.0.1.nip.io%3A8000%2F&response_type=code&scope=openid"
 ```
 
+## Active Directory Setup
+
+To generate a `keytab` file for Active Directory, create a service account / user e.g. `keycloak`.
+
+```bat
+REM Set service principal name
+setspn -s HTTP/myapp.example.org keycloak
+
+REM Generate keytab
+ktpass -princ HTTP/myapp.example.org ^
+  -mapuser keycloak@dev.pc8.dsta -crypto ALL ^
+  -ptype KRB5_NT_PRINCIPAL -pass * -out C:\keycloak.keytab
+```
+
 ## Windows Client Setup
 
 Create a principal for Windows Client
@@ -139,15 +157,20 @@ Common Errors:
 
    Principal for Windows Client not added: The principal name has to be lowercase.
 
+1. `SPNEGO login failed: java.security.PrivilegedActionException: GSSException: Failure unspecified at GSS-API level (Mechanism level: Invalid argument (400) - Cannot find key of appropriate type to decrypt AP-REQ - RC4 with HMAC)`
+
+   Keytab not found (check for typo in Keycloak settings).
+
 1. `SPNEGO login failed: java.security.PrivilegedActionException: GSSException: Failure unspecified at GSS-API level (Mechanism level: Checksum failed)`
+
+   Check the FQDN or keycloak server (e.g. domain CNAME alias). To verify use wireshark to inspect `TGS_REQ` in `req-body`.
 
    Regenerate the keytab file:
 
    ```sh
-   docker exec  keycloak-openldap kadmin.local -q "ktadd -k /etc/keytabs/keycloak.keytab HTTP/keycloak.127.0.0.1.nip.io@EXAMPLE.ORG"
+   docker exec keycloak-openldap kadmin.local -q "ktadd -k /etc/keytabs/keycloak.keytab HTTP/keycloak.127.0.0.1.nip.io@EXAMPLE.ORG"
+   docker exec --user root keycloak chmod 644 /tmp/keytabs/keycloak.keytab
    ```
-
-
 
 ## SSL Setup
 

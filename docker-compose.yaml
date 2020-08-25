@@ -19,6 +19,15 @@ services:
       - ./keycloak/krb5.conf:/etc/krb5.conf
       # For sharing keytab files from Kerberos
       - ./keytabs:/tmp/keytabs
+      # For importing of keycloak config
+      - ./keycloak/export:/tmp/realm-config
+    command:
+      [
+        '-Dkeycloak.migration.action=import',
+        '-Dkeycloak.migration.provider=dir',
+        '-Dkeycloak.migration.dir=/tmp/realm-config',
+        '-Dkeycloak.migration.strategy=IGNORE_EXISTING',
+      ]
     networks:
       - keycloak-network
     ports:
@@ -80,10 +89,10 @@ services:
     ports:
       - 8000:80
     container_name: keycloak-js-console
-    volumes:
-      - ./js-console/src/index.html:/usr/share/nginx/html/index.html
-      - ./js-console/src/silent-check-sso:/usr/share/nginx/html/silent-check-sso
-      - ./js-console/src/keycloak.json:/usr/share/nginx/html/keycloak.json
+    # For debugging
+    # volumes:
+    #   - ./js-console/src/index.html:/usr/share/nginx/html/index.html
+    #   - ./js-console/src/keycloak.json:/usr/share/nginx/html/keycloak.json
     networks:
       - keycloak-network
 

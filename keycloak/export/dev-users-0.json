@@ -1,0 +1,56 @@
+{
+  "realm" : "dev",
+  "users" : [ {
+    "id" : "f87c223a-5648-40fc-9283-fb7a27f7a181",
+    "createdTimestamp" : 1599697223807,
+    "username" : "alice",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "firstName" : "Alice",
+    "lastName" : "Amber",
+    "email" : "alice@example.org",
+    "federationLink" : "d02ad42a-4b5e-488f-91bb-ce175f31ccbd",
+    "attributes" : {
+      "LDAP_ENTRY_DN" : [ "uid=alice,ou=People,dc=example,dc=org" ],
+      "LDAP_ID" : [ "2b5521cc-79ec-103a-826c-67d8e19c4b8a" ],
+      "modifyTimestamp" : [ "20200824002618Z" ],
+      "createTimestamp" : [ "20200824002617Z" ]
+    },
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "c0558b9c-84a9-483b-87f9-20d2e84e9cf4",
+    "createdTimestamp" : 1599697223901,
+    "username" : "bob",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "firstName" : "Bob",
+    "lastName" : "Brown",
+    "email" : "bob@example.org",
+    "federationLink" : "d02ad42a-4b5e-488f-91bb-ce175f31ccbd",
+    "attributes" : {
+      "LDAP_ENTRY_DN" : [ "uid=bob,ou=People,dc=example,dc=org" ],
+      "modifyTimestamp" : [ "20200824002618Z" ],
+      "createTimestamp" : [ "20200824002617Z" ],
+      "LDAP_ID" : [ "2b557fdc-79ec-103a-826d-67d8e19c4b8a" ]
+    },
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}

@@ -110,7 +110,7 @@
         updateProfile();
     };
 
-    // Flow can be changed to 'implicit' or 'hybrid', but then client must enable implicit flow in admin console too 
+    // Flow can be changed to 'implicit' or 'hybrid', but then client must enable implicit flow in admin console too
     var initOptions = {
         onLoad: 'check-sso',
         silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
@@ -127,29 +127,6 @@
     }).error(function() {
         event('Init Error');
     });
-
-    var checkSsoSilently = function() {
-        var ifrm = document.createElement("iframe");
-        var src = kc.createLoginUrl({prompt: 'none', redirectUri: kc.silentCheckSsoRedirectUri});
-        ifrm.setAttribute("src", src);
-        ifrm.setAttribute("title", "keycloak-silent-refresh");
-        ifrm.style.display = "none";
-        document.body.appendChild(ifrm);
-
-        var messageCallback = function(event) {
-            if (event.origin !== window.location.origin || ifrm.contentWindow !== event.source) {
-                return;
-            }
-
-            var oauth = parseCallback(event.data);
-            processCallback(oauth, initPromise);
-
-            document.body.removeChild(ifrm);
-            window.removeEventListener("message", messageCallback);
-        };
-
-        window.addEventListener("message", messageCallback);
-    };
 
 </script>
 </body>

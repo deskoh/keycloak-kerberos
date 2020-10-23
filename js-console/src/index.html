@@ -18,6 +18,7 @@
 <html>
 <head>
     <script src="http://localhost:8080/auth/js/keycloak.js"></script>
+    <script src="KeycloakSilent.js"></script>
 
     <link href="patternfly/css/patternfly.css" rel="stylesheet" />
     <link href="patternfly/css/patternfly-additions.css" rel="stylesheet" />
@@ -31,6 +32,7 @@
             <li><a href="#" onclick="kc.login(login)">Login</a></li>
             <li><a href="#" onclick="kc.logout()">Logout</a></li>
             <li><a href="#" onclick="kc.updateToken(-1)">Refresh</a></li>
+            <li><a href="#" onclick="kc.checkSsoSilently()">Refresh (Silent)</a></li>
             <li><a href="#" onclick="output(kc.idTokenParsed)">ID Token JSON</a></li>
             <li><a href="#" onclick="output(kc.tokenParsed)">Access Token JSON</a></li>
             <li><a href="#" onclick="output(kc.idToken)">ID Token</a></li>
@@ -100,18 +102,19 @@
 
         d += '</div>';
 
-        console.info(d);
-
         output(d);
     }
-
 
     kc.onAuthRefreshSuccess = function () {
         updateProfile();
     };
 
-    // Flow can be changed to 'implicit' or 'hybrid', but then client must enable implicit flow in admin console too
-    var initOptions = {
+    kc.onAuthLogout = function () {
+        output('Not authenticated');
+    };
+
+    const initOptions = {
+        flow: 'standard',
         onLoad: 'check-sso',
         silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
         enableLogging: true,

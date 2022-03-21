@@ -7,6 +7,12 @@
 > Review permissions of volume mounts to ensure file permissions are at least 644.
 
 ```sh
+#Ensure files are executeable
+#-rwxr-xr-x openldap/service/z_kadmind/process.sh
+#-rwxr-xr-x openldap/service/z_krb5kdc/process.sh
+chmod 0755 openldap/service/z_kadmind/process.sh  openldap/service/z_krb5kdc/process.sh 
+#ls -la openldap/service/z_kadmind/process.sh  openldap/service/z_krb5kdc/process.sh 
+
 # Start services using Docker Compose
 docker-compose up
 
